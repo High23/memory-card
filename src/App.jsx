@@ -5,6 +5,10 @@ import './App.css'
 function App() {
   const [pokemonIds, setPokemonIds] = useState([])
   const [pokemonRefresh, setPokemonRefresh] = useState(0)
+  const [gameState, setGameState] = useState('won')
+  const [counter, setCounter] = useState(0)
+  const [highScore, setHighScore] = useState(counter)
+  const [amountOfPokemon, setAmountOfPokemon] = useState(0)
   
   
   useEffect(() => {
@@ -24,14 +28,35 @@ function App() {
     }
   }, [pokemonRefresh])
 
-
+  useEffect(() => {
+    if (counter > highScore) {
+      setHighScore(counter)
+    }
+    if (counter >= 12) {
+      setCounter(0)
+      setGameState('won')
+    }
+  }, [counter, highScore])
+  
   return (
     <>
-      <header>Memory Card Project</header>
+      <header>
+        <span>Memory Card Project </span> 
+        <span>Score: {counter} </span>
+        <span>High Score: {highScore}</span>
+      </header>
       <main>
-        {pokemonIds.length > 0  && 
+        {(gameState === 'lost' || gameState === 'won') && 
         <>
-          <PokemonImages setPokemonRefresh={setPokemonRefresh} pokemonIds={pokemonIds}></PokemonImages>
+          <DisplayOutcome gameState={gameState} imageSrc={gameState === 'won' ? 
+          'https://media1.tenor.com/m/nJclFuwdP5wAAAAC/squirtle-pikachu.gif' : 
+          'https://media1.tenor.com/m/4uPJsA8k1KEAAAAC/pokemon-pikachu.gif'}>
+          </DisplayOutcome>
+        </>
+        }
+        {(pokemonIds.length > 0 && gameState === 'playing') && 
+        <>
+          <PokemonImages setPokemonRefresh={setPokemonRefresh} pokemonIds={pokemonIds} setGameState={setGameState} counter={counter} setCounter={setCounter} setHighScore={setHighScore}></PokemonImages>
         </>
         }
       </main>
@@ -40,7 +65,7 @@ function App() {
   )
 }
 
-function PokemonImages({setPokemonRefresh, pokemonIds}) {
+function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, setCounter, setHighScore}) {
   const [pokemonData, setPokemonData] = useState([])
   const [randomizedPokemonData, setRandomizedPokemonData] = useState([])
   const [pokemonIdRefresh, setPokemonIdRefresh] = useState(false)
@@ -64,10 +89,9 @@ function PokemonImages({setPokemonRefresh, pokemonIds}) {
       randomizedIds.length > 0 ? randomizedIds = [...randomizedIds, pokemonDataCopy[randomNumber]] : randomizedIds = [pokemonDataCopy[randomNumber]]
       pokemonDataCopy = pokemonDataCopy.filter((id) => id !== pokemonDataCopy[randomNumber])
     }
-    console.log(randomizedIds)
     setRandomizedPokemonData([...randomizedIds])
     return () => {
-      setRandomizedPokemonData()
+      setRandomizedPokemonData([])
     }
   }, [pokemonData, pokemonIdRefresh])
 
@@ -81,14 +105,18 @@ function PokemonImages({setPokemonRefresh, pokemonIds}) {
         <div>Loading...</div>
       </div>}
       {(pokemonData.length > 0) &&
-        <DisplayPokemon setPokemonIdRefresh={setPokemonIdRefresh} randomizedPokemonData={randomizedPokemonData} pokemonIdRefresh={pokemonIdRefresh} setState={setState} state={state}></DisplayPokemon>
+        <DisplayPokemon setPokemonIdRefresh={setPokemonIdRefresh} randomizedPokemonData={randomizedPokemonData} 
+        pokemonIdRefresh={pokemonIdRefresh} setState={setState} state={state} setGameState={setGameState} 
+        counter={counter} setCounter={setCounter} setHighScore={setHighScore}>
+        </DisplayPokemon>
       }
     </>
   )
 }
 
 
-function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRefresh, setState, state}) {
+function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRefresh, setState, state, setGameState, counter, setCounter, setHighScore}) {
+  const [pokemonClicked, setPokemonClicked] = useState(new Set())
   useEffect(() => {
     const load = setInterval(() => {
       setState('Success')
@@ -104,7 +132,18 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
       return (
         <div key={pokemon.id}>
           <button type="button" onClick={() => {
-            console.log(pokemonIdRefresh)
+            if (pokemonClicked.has(pokemon.id)) {
+              setHighScore(counter)
+              setCounter(0)
+              setGameState('lost')
+              return
+            } else if (pokemonClicked.size > 0) {
+              setPokemonClicked(new Set([...pokemonClicked, pokemon.id])); 
+            }
+            else {
+              setPokemonClicked(new Set([pokemon.id]))
+            }
+            setCounter(counter + 1)
             pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
             }}>
             <img src={pokemon.sprites.other.dream_world.front_default} alt=""></img>
@@ -121,11 +160,21 @@ async function fetchPokemonById(id) {
   let dataArray = [];
   for (let i = 0; i < 12; i++){
     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id[i]}`)
-    console.log(response)
     const data = await response.json()
     dataArray.push(data)
   }
   return dataArray
+}
+
+function DisplayOutcome({gameState, imageSrc}) {
+  console.log(imageSrc)
+  return (
+  <>
+    <img src={imageSrc}></img>
+    <div>You {gameState}!!!</div>
+  </>
+    
+  )
 }
 
 export default App
