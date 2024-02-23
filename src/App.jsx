@@ -14,21 +14,61 @@ function App() {
   
   
   useEffect(() => {
-    let idSet = new Set([Math.floor(Math.random() * 150 + 1)])
+    let genAmount;
+    let genStart = 0;
+    switch (pokemonGen) {
+      case '2':
+        genStart = 152
+        genAmount = 99;
+        break;
+      case '3':
+        genStart = 252
+        genAmount = 134;
+        break;
+      case '4':
+        genStart = 387
+        genAmount = 106;
+        break;
+      case '5':
+        genStart = 494
+        genAmount = 155;
+        break;
+      case '6':
+        genStart = 650
+        genAmount = 71;
+        break;
+      case '7':
+        genStart = 722
+        genAmount = 87;
+        break;
+      case '8':
+        genStart = 810
+        genAmount = 95;
+        break;
+      case '9':
+        genStart = 906;
+        genAmount = 119;
+        break;
+      default:
+        genAmount = 150;
+        break;
+    }
+    let idSet = new Set([Math.floor(Math.random() * genAmount + 1 + genStart)])
     while (idSet.size < amountOfPokemon) {
-      let randomNumber = Math.floor(Math.random() * 150 + 1)
+      let randomNumber = Math.floor((Math.random() * genAmount + 1) + genStart)
       let bool = idSet.has(randomNumber)
       if (bool) {
-        randomNumber = Math.floor(Math.random() * 150 + 1)
+        randomNumber = Math.floor((Math.random() * genAmount + 1) + genStart)
       } else {
         idSet = new Set([...idSet, randomNumber])
       }
+      console.log(idSet)
     }
     setPokemonIds([...idSet])
     return () => {
       setPokemonIds([])
     }
-  }, [amountOfPokemon, pokemonRefresh])
+  }, [amountOfPokemon, pokemonRefresh, pokemonGen])
 
   useEffect(() => {
     if (counter > highScore) {
@@ -60,9 +100,29 @@ function App() {
                 setPokemonRefresh(0)
                 setCounter(0)
                 setAmountOfPokemon(0)
+                setPokemonGen(1)
               }
             }>Menu</button>
           </>
+        }
+        {gameState === 'menu' && 
+        <>
+          <label htmlFor="pokemon-generations"></label>
+          <select name='pokemon-generations' id='pokemon-generations' onChange={(selected) => {
+            setPokemonGen(selected.target.value)
+          }}>
+            <option value="1">Generation 1</option>
+            <option value="2">Generation 2</option>
+            <option value="3">Generation 3</option>
+            <option value="4">Generation 4</option>
+            <option value="5">Generation 5</option>
+            <option value="6">Generation 6</option>
+            <option value="7">Generation 7</option>
+            <option value="8">Generation 8</option>
+            <option value="9">Generation 9</option>
+            <option value="10">All Generations</option>
+          </select>
+        </>
         }
       </header>
       <main>
@@ -84,6 +144,7 @@ function App() {
                 setPokemonRefresh(0)
                 setCounter(0)
                 setAmountOfPokemon(0)
+                setPokemonGen(1)
               }
             }>Menu</button>
         </section>
@@ -154,13 +215,10 @@ function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, se
 function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRefresh, setState, state, setGameState, counter, setCounter, gameMode, setPokemonRefresh}) {
   const [pokemonClicked, setPokemonClicked] = useState(new Set())
   useEffect(() => {
-    let timer = 1000
-    if (gameMode === 'endless') {
-      timer = 600
-    }
+    
     const load = setInterval(() => {
       setState('Success')
-    }, timer); 
+    }, 600); 
     return () => {
       clearInterval(load)
     }
@@ -197,7 +255,7 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
             setCounter(counter + 1)
             pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
             }}>
-            <img src={pokemon.sprites.other.dream_world.front_default} alt=""></img>
+            <img src={pokemon.sprites.other.dream_world.front_default !== null ? pokemon.sprites.other.dream_world.front_default : pokemon.sprites.other.home.front_default} alt=""></img>
             <div>{pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1)}</div>
           </button>
         </div>
