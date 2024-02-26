@@ -20,14 +20,27 @@ header > span:first-child {
 .menu {
     display: grid;
     justify-content: center;
+    grid-template-columns: clamp(200px, 100%, 500px);
+    gap: 15px;
+}
+
+.menu > p {
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0px 15px;
+}
+
+.menu-buttons {
+    display: grid;
+    justify-content: center;
     align-content: center;
     min-height: 100%;
     row-gap: 10px;
 }
 
-.menu > button {
+.menu-buttons > button {
     width: 250px;
-    font-size: 2rem;
+    font-size: 1.8rem;
 }
 
 header > span:nth-child(2) {
@@ -126,6 +139,14 @@ select {
     padding: 2px;
 }
 
+.easy > div, 
+.medium > div, 
+.hard > div, 
+.endless-btn > div {
+    font-size: 0.75rem;
+    font-weight: 100;
+}
+
 @media (max-width: 1200px) {
     .classic > button {
         flex-basis: 160px;
@@ -163,7 +184,7 @@ select {
         padding-top: 10px;
     }
 
-    .menu > button {
+    .menu-buttons > button {
         width: 180px;
         font-size: 1.6rem;
     }
