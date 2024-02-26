@@ -276,7 +276,6 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
             else {
               setPokemonClicked(new Set([pokemon.id]))
             }
-            console.log(pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1))
             setCounter(counter + 1)
             pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
             }}>
