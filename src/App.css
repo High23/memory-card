@@ -1,42 +1,196 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+header {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    align-items: center;
+    margin: 5px 25px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+header > span:first-child {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    font-size: 1.3rem;
+    gap: 18px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.title {
+    font-size: 2rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.menu {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    min-height: 100%;
+    row-gap: 10px;
 }
 
-.card {
-  padding: 2em;
+.menu > button {
+    width: 250px;
+    font-size: 2rem;
 }
 
-.read-the-docs {
-  color: #888;
+header > span:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+}
+
+header > span:nth-child(2) > button {
+    font-size: 1rem;
+    width: 75px;
+    padding: 6px 10px;
+}
+
+button + a {
+    padding-left: 20px;
+}
+
+.classic, .endless {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    row-gap: 30px;
+    column-gap: 15px;
+    padding: 10px 25px;
+}
+
+.classic > button, .endless > button {
+    display: grid;
+    grid-template-columns: clamp(100px, 100%, 200px);
+    grid-template-rows: 150px;
+    justify-items: center;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 230px;
+    row-gap: 10px;
+    padding: 10px 10px 5px;
+}
+
+.pokemon-image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: clamp(100px, 100%, 200px);
+    height: clamp(100px, 100%, 200px);
+}
+
+.pokemon-name {
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+a > img {
+    width: 50px;
+}
+
+.scoreboard {
+    grid-column: 1 / 3;
+    text-align: center;
+}
+
+.scoreboard > span {
+    padding-left: 15px;
+}
+
+footer {
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.outcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.8rem;
+}
+
+.outcome > button {
+    width: 100px;
+    font-size: 1.3rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.loading > img, .outcome > img {
+    max-width: 90%;
+}
+
+.loading > div, .outcome > div {
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+    .classic > button {
+        flex-basis: 160px;
+    }
+}
+
+@media (max-width: 620px) {
+    .title {
+        font-size: 1.7rem;
+    }
+
+    .title + span {
+        font-size: 1.1rem;
+    }
+
+    header > span:first-child {
+        grid-template-columns: auto;
+        grid-template-rows: auto 1fr;
+    }
+
+    header {
+        margin: 25px;
+    }
+}
+
+@media (max-width: 450px) {
+    header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .scoreboard {
+        grid-column: 1 / 2;
+        padding-top: 10px;
+    }
+
+    .menu > button {
+        width: 180px;
+        font-size: 1.6rem;
+    }
+
+    .outcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 1.8rem;
+    }
+
+    .outcome > button {
+        width: 100px;
+        font-size: 1.3rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: none;
+    }
+
+    .loading > img, .outcome > img {
+        max-width: 90%;
+    }
+
+    .loading > div, .outcome > div {
+        text-align: center;
+    }
+
+    button + a {
+        padding-left: 20px;
+    }
+
+    .title + span {
+        padding-bottom: 20px;
+    }
 }
