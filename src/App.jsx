@@ -9,9 +9,10 @@ function App() {
   const [gameState, setGameState] = useState('menu')
   const [gameMode, setGameMode] = useState('classic')
   const [pokemonGen, setPokemonGen] = useState('1')
-  const [counter, setCounter] = useState(0)
+  const [counter, setCounter] = useState(30)
   const [highScore, setHighScore] = useState(counter)
   const [amountOfPokemon, setAmountOfPokemon] = useState(0)
+  const [outcomeImage, setOutcomeImage] = useState()
   
   
   useEffect(() => {
@@ -67,7 +68,6 @@ function App() {
       } else {
         idSet = new Set([...idSet, randomNumber])
       }
-      console.log(idSet)
     }
     setPokemonIds([...idSet])
     return () => {
@@ -85,6 +85,7 @@ function App() {
         scores[[amountOfPokemon]] = counter
         localStorage.setItem('scores', JSON.stringify(scores))
       }
+      setOutcomeImage('https://media1.tenor.com/m/nJclFuwdP5wAAAAC/squirtle-pikachu.gif')
       setCounter(0)
       setGameState('won')
     }
@@ -152,10 +153,8 @@ function App() {
 
         {(gameState === 'lost' || gameState === 'won') && 
         <section className='outcome'>
-          <DisplayOutcome gameState={gameState}  imageSrc={gameState === 'won' ? 
-          'https://media1.tenor.com/m/nJclFuwdP5wAAAAC/squirtle-pikachu.gif' : 
-          'https://media1.tenor.com/m/4uPJsA8k1KEAAAAC/pokemon-pikachu.gif'}>
-          </DisplayOutcome>
+          <DisplayOutcome gameState={gameState} outcomeImage={outcomeImage} counter={counter} 
+          gameMode={gameMode} amountOfPokemon={amountOfPokemon}></DisplayOutcome>
           <button type="button" onClick={() => {
                 setGameState('menu')
                 setPokemonIds([])
@@ -171,7 +170,7 @@ function App() {
         <section className={gameMode === 'endless' ? gameMode : gameMode}>
           <PokemonImages setPokemonRefresh={setPokemonRefresh} pokemonIds={pokemonIds} 
           setGameState={setGameState} counter={counter} setCounter={setCounter} 
-          gameMode={gameMode} amountOfPokemon={amountOfPokemon}></PokemonImages>
+          gameMode={gameMode} amountOfPokemon={amountOfPokemon} setOutcomeImage={setOutcomeImage}></PokemonImages>
         </section>
         }
       </main>
@@ -180,7 +179,7 @@ function App() {
   )
 }
 
-function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, setCounter, gameMode}) {
+function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, setCounter, gameMode, setOutcomeImage}) {
   const [pokemonData, setPokemonData] = useState([])
   const [randomizedPokemonData, setRandomizedPokemonData] = useState([])
   const [pokemonIdRefresh, setPokemonIdRefresh] = useState(false)
@@ -210,8 +209,6 @@ function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, se
     }
   }, [pokemonData, pokemonIdRefresh])
 
-  
-  
   return (
     <>
       {state === 'Loading' && 
@@ -222,7 +219,7 @@ function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, se
       {(pokemonData.length > 0) &&
         <DisplayPokemon setPokemonIdRefresh={setPokemonIdRefresh} randomizedPokemonData={randomizedPokemonData} 
         pokemonIdRefresh={pokemonIdRefresh} setState={setState} state={state} setGameState={setGameState} 
-        counter={counter} setCounter={setCounter} gameMode={gameMode} setPokemonRefresh={setPokemonRefresh}>
+        counter={counter} setCounter={setCounter} gameMode={gameMode} setPokemonRefresh={setPokemonRefresh} setOutcomeImage={setOutcomeImage}>
         </DisplayPokemon>
       }
     </>
@@ -230,7 +227,9 @@ function PokemonImages({setPokemonRefresh, pokemonIds, setGameState, counter, se
 }
 
 
-function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRefresh, setState, state, setGameState, counter, setCounter, gameMode, setPokemonRefresh}) {
+function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRefresh, 
+  setState, state, setGameState, counter, setCounter, 
+  gameMode, setPokemonRefresh, setOutcomeImage}) {
   const [pokemonClicked, setPokemonClicked] = useState(new Set())
   useEffect(() => {
     
@@ -260,7 +259,15 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
                 localStorage.setItem('scores', JSON.stringify(scores))
               }
               setPokemonRefresh(0)
-              setCounter(0)
+              if (counter <= 5 && gameMode === 'endless') {
+                setOutcomeImage('https://media1.tenor.com/m/rs2AXrgF3F8AAAAC/pokemon-charizard.gif')
+              } else if ((counter > 5 && counter < 30) && gameMode === 'endless') {
+                setOutcomeImage('https://media1.tenor.com/m/WwumJCeM93YAAAAC/cute-pikachu.gif')
+              } else if (counter >= 30  && gameMode === 'endless') {
+                setOutcomeImage('https://media1.tenor.com/m/gp40E-RL_0sAAAAC/may-torchic.gif')
+              } else {
+                setOutcomeImage('https://media1.tenor.com/m/4uPJsA8k1KEAAAAC/pokemon-pikachu.gif')
+              }
               setGameState('lost')
               return
             } else if (pokemonClicked.size > 0) {
@@ -269,6 +276,7 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
             else {
               setPokemonClicked(new Set([pokemon.id]))
             }
+            console.log(pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1))
             setCounter(counter + 1)
             pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
             }}>
@@ -292,12 +300,23 @@ async function fetchPokemonById(id) {
   return dataArray
 }
 
-function DisplayOutcome({gameState, imageSrc}) {
-  console.log(imageSrc)
+function DisplayOutcome({gameState, outcomeImage, counter, gameMode, amountOfPokemon}) {
+  let outcomeMessage = ''
+  if (counter <= 5 && gameMode === 'endless') {
+    outcomeMessage = `Did you even try? You only got ${counter} pokemon.`
+  } else if ((counter > 5 && counter < 30) && gameMode === 'endless') {
+    outcomeMessage = `Good job! You got ${counter} pokemon!!`
+  } else if (counter >= 30  && gameMode === 'endless') {
+    outcomeMessage = `Holy! Big Brain Player Here. You got ${counter} pokemon!!!`
+  } else if (gameMode === 'classic' && gameState === 'lost') {
+    outcomeMessage = `You only got ${counter} out of ${amountOfPokemon} pokemon. Better luck next time!`
+  } else if (gameMode === 'classic' && gameState === 'won') {
+    outcomeMessage = `Good Job! You got all ${amountOfPokemon} pokemon!`
+  }
   return (
   <>
-    <img src={imageSrc} ></img>
-    <div>You {gameState}!!!</div>
+    <img src={outcomeImage} ></img>
+    <div>{outcomeMessage}</div>
   </>
     
   )
