@@ -9,7 +9,7 @@ function App() {
   const [gameState, setGameState] = useState('menu')
   const [gameMode, setGameMode] = useState('classic')
   const [pokemonGen, setPokemonGen] = useState('1')
-  const [counter, setCounter] = useState(30)
+  const [counter, setCounter] = useState(0)
   const [highScore, setHighScore] = useState(counter)
   const [amountOfPokemon, setAmountOfPokemon] = useState(0)
   const [outcomeImage, setOutcomeImage] = useState()
