@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import pikachuGif from './assets/pikachu-running.gif'
+import githubMark from './assets/github-mark-white.png'
 import './App.css'
 
 function App() {
@@ -49,6 +50,10 @@ function App() {
         genStart = 906;
         genAmount = 119;
         break;
+      case '10':
+        genStart = 0;
+        genAmount = 1025;
+        break;
       default:
         genAmount = 150;
         break;
@@ -89,39 +94,52 @@ function App() {
   return (
     <>
       <header>
-        <span>Memory Card Project </span> 
+        <span>
+          <span className="title">Memory Card</span>
+          {gameState === 'menu' && 
+          <span>
+            <label htmlFor="pokemon-generations">Gen: </label>
+            <select name='pokemon-generations' id='pokemon-generations' onChange={(selected) => {
+              setPokemonGen(selected.target.value)
+            }}>
+              <option value="1">Generation 1</option>
+              <option value="2">Generation 2</option>
+              <option value="3">Generation 3</option>
+              <option value="4">Generation 4</option>
+              <option value="5">Generation 5</option>
+              <option value="6">Generation 6</option>
+              <option value="7">Generation 7</option>
+              <option value="8">Generation 8</option>
+              <option value="9">Generation 9</option>
+              <option value="10">All Generations</option>
+            </select>
+          </span>
+          }
+        </span> 
+        <span>
+          { gameState === 'playing' &&
+            <>
+              <button type="button" onClick={() => {
+                  setGameState('menu')
+                  setPokemonIds([])
+                  setPokemonRefresh(0)
+                  setCounter(0)
+                  setAmountOfPokemon(0)
+                  setPokemonGen(1)
+                }
+              }>Menu</button>
+            </>
+          }
+          <a href="https://github.com/High23/memory-card" target='_blank'>
+            <img src={githubMark}></img>
+          </a>
+        </span>
         { gameState === 'playing' &&
-          <>
-            <span>Score: {counter} </span>
-            <span>High Score: {highScore}</span>
-            <button type="button" onClick={() => {
-                setGameState('menu')
-                setPokemonIds([])
-                setPokemonRefresh(0)
-                setCounter(0)
-                setAmountOfPokemon(0)
-                setPokemonGen(1)
-              }
-            }>Menu</button>
-          </>
-        }
-        {gameState === 'menu' && 
         <>
-          <label htmlFor="pokemon-generations"></label>
-          <select name='pokemon-generations' id='pokemon-generations' onChange={(selected) => {
-            setPokemonGen(selected.target.value)
-          }}>
-            <option value="1">Generation 1</option>
-            <option value="2">Generation 2</option>
-            <option value="3">Generation 3</option>
-            <option value="4">Generation 4</option>
-            <option value="5">Generation 5</option>
-            <option value="6">Generation 6</option>
-            <option value="7">Generation 7</option>
-            <option value="8">Generation 8</option>
-            <option value="9">Generation 9</option>
-            <option value="10">All Generations</option>
-          </select>
+          <span className='scoreboard'>
+            Score: {counter} 
+            <span>High Score: {highScore}</span>
+          </span>
         </>
         }
       </header>
@@ -157,7 +175,7 @@ function App() {
         </section>
         }
       </main>
-      <footer></footer>
+      <footer>Powered by <a href="https://pokeapi.co/">PokeApi</a></footer>
     </>
   )
 }
@@ -228,8 +246,7 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
     <>
     {state === 'Success' && randomizedPokemonData.map((pokemon) => {
       return (
-        <div key={pokemon.id}>
-          <button type="button" onClick={() => {
+          <button key={pokemon.id} type="button" onClick={() => {
             let amountOfPokemon = randomizedPokemonData.length
             if (pokemonClicked.size === amountOfPokemon - 1 && gameMode === 'endless') {
               setPokemonClicked(new Set())
@@ -255,10 +272,10 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
             setCounter(counter + 1)
             pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
             }}>
-            <img src={pokemon.sprites.other.dream_world.front_default !== null ? pokemon.sprites.other.dream_world.front_default : pokemon.sprites.other.home.front_default} alt=""></img>
-            <div>{pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1)}</div>
+            <img className='pokemon-image' src={pokemon.sprites.other.dream_world.front_default !== null ? pokemon.sprites.other.dream_world.front_default : pokemon.sprites.other.home.front_default} alt=''></img>
+            <div className='pokemon-name'>{pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1)}</div>
           </button>
-        </div>
+        
       )
     })}
     </>
@@ -279,7 +296,7 @@ function DisplayOutcome({gameState, imageSrc}) {
   console.log(imageSrc)
   return (
   <>
-    <img src={imageSrc}></img>
+    <img src={imageSrc} ></img>
     <div>You {gameState}!!!</div>
   </>
     
@@ -291,25 +308,25 @@ function MainMenu({setAmountOfPokemon, setGameState, setHighScore, setGameMode})
 
   return (
     <>
-      <button type="button" onClick={() => {
+      <button type="button" className='easy' onClick={() => {
         setAmountOfPokemon(6)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[6]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
       }}>Easy</button>
-      <button type="button" onClick={() => {
+      <button type="button" className='medium' onClick={() => {
         setAmountOfPokemon(12)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[12]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
       }}>Medium</button>
-      <button type="button" onClick={() => {
+      <button type="button" className='hard' onClick={() => {
         setAmountOfPokemon(18)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[18]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
       }}>Hard</button>
-      <button type="button" onClick={() => {
+      <button type="button" className='endless-btn' onClick={() => {
         setAmountOfPokemon(15)
         setGameState('playing')
         setGameMode('endless')
