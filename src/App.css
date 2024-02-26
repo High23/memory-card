@@ -96,6 +96,7 @@ a > img {
 footer {
     text-align: center;
     font-size: 1.1rem;
+    padding: 5px 0px;
 }
 
 .outcome {
@@ -119,6 +120,10 @@ footer {
 
 .loading > div, .outcome > div {
     text-align: center;
+}
+
+select {
+    padding: 2px;
 }
 
 @media (max-width: 1200px) {
