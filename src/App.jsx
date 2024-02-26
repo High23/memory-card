@@ -245,44 +245,43 @@ function DisplayPokemon({setPokemonIdRefresh, randomizedPokemonData, pokemonIdRe
     <>
     {state === 'Success' && randomizedPokemonData.map((pokemon) => {
       return (
-          <button key={pokemon.id} type="button" onClick={() => {
-            let amountOfPokemon = randomizedPokemonData.length
-            if (pokemonClicked.size === amountOfPokemon - 1 && gameMode === 'endless') {
-              setPokemonClicked(new Set())
-              setPokemonRefresh(num => num + 1)
+        <button key={pokemon.id} type="button" onClick={() => {
+          let amountOfPokemon = randomizedPokemonData.length
+          if (pokemonClicked.size === amountOfPokemon - 1 && gameMode === 'endless') {
+            setPokemonClicked(new Set())
+            setPokemonRefresh(num => num + 1)
+          }
+          if (pokemonClicked.has(pokemon.id)) {
+            let scores = JSON.parse(localStorage.getItem('scores'))
+            gameMode === 'endless' ? amountOfPokemon = 'endless' : null
+            if (scores[[amountOfPokemon]] < counter) {
+              scores[[amountOfPokemon]] = counter
+              localStorage.setItem('scores', JSON.stringify(scores))
             }
-            if (pokemonClicked.has(pokemon.id)) {
-              let scores = JSON.parse(localStorage.getItem('scores'))
-              gameMode === 'endless' ? amountOfPokemon = 'endless' : null
-              if (scores[[amountOfPokemon]] < counter) {
-                scores[[amountOfPokemon]] = counter
-                localStorage.setItem('scores', JSON.stringify(scores))
-              }
-              setPokemonRefresh(0)
-              if (counter <= 5 && gameMode === 'endless') {
-                setOutcomeImage('https://media1.tenor.com/m/rs2AXrgF3F8AAAAC/pokemon-charizard.gif')
-              } else if ((counter > 5 && counter < 30) && gameMode === 'endless') {
-                setOutcomeImage('https://media1.tenor.com/m/WwumJCeM93YAAAAC/cute-pikachu.gif')
-              } else if (counter >= 30  && gameMode === 'endless') {
-                setOutcomeImage('https://media1.tenor.com/m/gp40E-RL_0sAAAAC/may-torchic.gif')
-              } else {
-                setOutcomeImage('https://media1.tenor.com/m/4uPJsA8k1KEAAAAC/pokemon-pikachu.gif')
-              }
-              setGameState('lost')
-              return
-            } else if (pokemonClicked.size > 0) {
-              setPokemonClicked(new Set([...pokemonClicked, pokemon.id])); 
+            setPokemonRefresh(0)
+            if (counter <= 5 && gameMode === 'endless') {
+              setOutcomeImage('https://media1.tenor.com/m/rs2AXrgF3F8AAAAC/pokemon-charizard.gif')
+            } else if ((counter > 5 && counter < 30) && gameMode === 'endless') {
+              setOutcomeImage('https://media1.tenor.com/m/WwumJCeM93YAAAAC/cute-pikachu.gif')
+            } else if (counter >= 30  && gameMode === 'endless') {
+              setOutcomeImage('https://media1.tenor.com/m/gp40E-RL_0sAAAAC/may-torchic.gif')
+            } else {
+              setOutcomeImage('https://media1.tenor.com/m/4uPJsA8k1KEAAAAC/pokemon-pikachu.gif')
             }
-            else {
-              setPokemonClicked(new Set([pokemon.id]))
-            }
-            setCounter(counter + 1)
-            pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
-            }}>
-            <img className='pokemon-image' src={pokemon.sprites.other.dream_world.front_default !== null ? pokemon.sprites.other.dream_world.front_default : pokemon.sprites.other.home.front_default} alt=''></img>
-            <div className='pokemon-name'>{pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1)}</div>
-          </button>
-        
+            setGameState('lost')
+            return
+          } else if (pokemonClicked.size > 0) {
+            setPokemonClicked(new Set([...pokemonClicked, pokemon.id])); 
+          }
+          else {
+            setPokemonClicked(new Set([pokemon.id]))
+          }
+          setCounter(counter + 1)
+          pokemonIdRefresh ? setPokemonIdRefresh(false) : setPokemonIdRefresh(true)
+          }}>
+          <img className='pokemon-image' src={pokemon.sprites.other.dream_world.front_default !== null ? pokemon.sprites.other.dream_world.front_default : pokemon.sprites.other.home.front_default} alt=''></img>
+          <div className='pokemon-name'>{pokemon.forms[0].name.charAt(0).toUpperCase() + pokemon.forms[0].name.slice(1)}</div>
+        </button>
       )
     })}
     </>
@@ -326,30 +325,34 @@ function MainMenu({setAmountOfPokemon, setGameState, setHighScore, setGameMode})
 
   return (
     <>
+    <p>The goal of this game is to click on all given pokemon without clicking any previously clicked pokemon</p>
+    <div className='menu-buttons'>
+      
       <button type="button" className='easy' onClick={() => {
         setAmountOfPokemon(6)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[6]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
-      }}>Easy</button>
+      }}>Easy <div>Six Pokemon</div></button>
       <button type="button" className='medium' onClick={() => {
         setAmountOfPokemon(12)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[12]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
-      }}>Medium</button>
+      }}>Medium <div>Twelve Pokemon</div></button>
       <button type="button" className='hard' onClick={() => {
         setAmountOfPokemon(18)
         setGameState('playing')
         setGameMode('classic')
         scores !== null ? setHighScore(scores[[18]]) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
-      }}>Hard</button>
+      }}>Hard <div>Eighteen Pokemon</div></button>
       <button type="button" className='endless-btn' onClick={() => {
         setAmountOfPokemon(15)
         setGameState('playing')
         setGameMode('endless')
         scores !== null ? setHighScore(scores.endless) : localStorage.setItem('scores', JSON.stringify({6: 0, 12: 0, 18: 0, 'endless': 0}))
-      }}>Endless</button>
+      }}>Endless <div>Go for as many pokemon as you can!</div></button>
+    </div>
     </>
   )
 }
